@@ -118,21 +118,22 @@ slider.grid(row=11, column=2)
 #lisätään ohjauspainike
 
 def ohjauskeskus():
-
     while 1:
         #tässä on koodia joka ohjaa tomaatinheittoa...
         print("...ohjati...ohjati...ohjati")
         #tarkastellaan montako threadia pitäisi olla...
         saie_tavoite_maara=slider.get()
         print(saie_tavoite_maara)
+        cpu_kuormitus_str = cpu_muuttuja_naytolla.get()
+        cpu_kuormitus_parts = cpu_kuormitus_str.split(":")
+        
+        if len(cpu_kuormitus_parts) > 1:
+            cpu_kuormitus = float(cpu_kuormitus_parts[1].strip()[:-1])
+        
         #jos tällä hetkellä säikeitä vähemmän kuin tavoite, niin...
-        # print(type(saie_tavoite_maara))
-        # print(type(cpu_muuttuja_naytolla.get()))
-    
-        if saie_tavoite_maara<cpu_muuttuja_naytolla.get():
-        # if saie_tavoite_maara<50:
-            print("Nyt tulisi tehdä lisää kuormitusta...")
-            luo_ja_aja_saie_tomaatinheittoa_varten_ernestille()
+            if saie_tavoite_maara<cpu_kuormitus:
+                print("Nyt tulisi tehdä lisää kuormitusta...")
+                luo_ja_aja_saie_tomaatinheittoa_varten_ernestille()
         
         time.sleep(1)
 
@@ -141,6 +142,5 @@ ohjaus.grid(row=9,column=1)
 
 ohjaus_saie=threading.Thread(target=ohjauskeskus)
 ohjaus_saie.start()
-
 
 ikkuna.mainloop()
