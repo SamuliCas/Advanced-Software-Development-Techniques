@@ -26,11 +26,17 @@ kerne_monkey.create_text(50, 50, text="monkey", fill="white", font=("Arial", 12,
 word_label = tk.Label(window, text="", font=("Arial", 12, "bold"))
 word_label.grid(row=9, column=5)
 
+word_label2 = tk.Label(window, text="", font=("Arial", 12, "bold"))
+word_label2.grid(row=11, column=5)
+
 emergencyMessage = "We are stuck on the island please send help"
 word_to_teach = ""
+eat_probability = 0.01
+monkeys_reached_continent = 0
+total_monkeys = 0
 
 def move_erne_monkey():
-    global word_to_teach
+    global word_to_teach, monkeys_reached_continent, total_monkeys
     x_start = island.winfo_x() + island.winfo_width() // 2
     y_start = island.winfo_y()
     x_target = continent.winfo_x() + continent.winfo_width() // 2
@@ -41,6 +47,12 @@ def move_erne_monkey():
 
     for step in range(100):
         x = x_start + step * step_size
+
+        if random.random() < eat_probability:
+            word_label2.config(text="Monkey eaten by shark")
+            winsound.Beep(200,1000)
+            return 
+        
         erne_monkey.place(x=x, y=y_start)
         winsound.Beep(440, 100)
         window.update()  # Update the window to show the new position
@@ -50,16 +62,28 @@ def move_erne_monkey():
 
     erne_monkey.place(x=x_target, y=y_start)
     winsound.Beep(840, 500)
-
     word_label.config(text=word_to_teach)
+    monkeys_reached_continent += 1
 
+# Adjust the eat_probability dynamically to achieve a 50% success rate
+def adjust_eat_probability():
+    global eat_probability
+    total_monkeys += 1  # Double the probability to increase success rate
+
+    if monkeys_reached_continent / total_monkeys < 0.5:
+        eat_probability *= 2  # Double the probability to increase success rate
+    else:
+        eat_probability /= 2
+        
 def send_monkey_with_word(word_number):
-    global word_to_teach
+    global word_to_teach, eat_probability
     words = emergencyMessage.split()
     if words:
         random_word_index = random.randint(0, len(words) - 1)
         word_to_teach = words[random_word_index]
         threading.Thread(target=move_erne_monkey).start()
+        # Adjust the eat_probability
+        adjust_eat_probability()
     else:
         print("Invalid word number")
 
@@ -75,6 +99,13 @@ def move_kerne_monkey():
 
     for step in range(100):
         x = x_start + step * step_size
+
+        # Check if the monkey gets eaten by a shark (1% chance)
+        if random.random() < 0.01:
+            word_label2.config(text="Monkey eaten by shark")
+            winsound.Beep(200,1000)
+            return  # Exit the function if the monkey gets eaten
+        
         kerne_monkey.place(x=x, y=y_start)
         winsound.Beep(440, 100)
         window.update()  # Update the window to show the new position
