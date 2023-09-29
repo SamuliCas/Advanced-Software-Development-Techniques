@@ -9,6 +9,23 @@ window = tk.Tk()
 window.title("Exercise 5")
 window.geometry("800x800")
 
+koristetta = tk.Label(window, text="").grid(row=0, column=0)
+point_button = []
+for i in range(5):
+    button_temp = tk.Button(window, text="Points: " + str(i + 1), padx=40)
+    button_temp.grid(row=0, column=i + 1)
+    point_button.append(button_temp)
+
+def i_suppose_i_have_earned_so_much_points(amount_of_points):
+    for i in range(5):
+        point_button[i].configure(bg='gray')
+    time.sleep(1)
+    for i in range(amount_of_points):
+        point_button[i].configure(bg='green')
+        winsound.Beep(440 + i * 100, 500)
+
+i_suppose_i_have_earned_so_much_points(3)
+
 island = tk.Canvas(window, width=100, height=500, bg="yellow")
 island.grid(row=1, column=1, rowspan=5)
 island.create_text(50, 250, text="island", fill="white", font=("Arial", 12, "bold"))
@@ -36,6 +53,8 @@ monkeys_reached_continent = 0
 total_monkeys = 0
 erne_monkeys = []
 kerne_monkeys = []
+
+monkey_lock = threading.Lock()
 
 def create_erne_monkey():
     monkey = tk.Canvas(window, width=100, height=100, bg="brown")
@@ -65,16 +84,17 @@ def move_monkey(monkey_canvas, y_start):
             word_label2.config(text="Monkey eaten by shark")
             print("eaten by shark")
             eaten_by_shark = True            
-            winsound.Beep(200,100)
+            winsound.Beep(200,10)
             monkey_canvas.destroy()
 
         if not eaten_by_shark:
-            monkey_canvas.place(x=x, y=y_start)
-            winsound.Beep(440, 100)
-            window.update()  # Update the window to show the new position
-            window.after(50)  # Delay for smoother animation (adjust as needed)
+            with monkey_lock:
+                monkey_canvas.place(x=x, y=y_start)
+                winsound.Beep(440, 100)
+                window.update()  # Update the window to show the new position
+                window.after(1)  # Delay for smoother animation (adjust as needed)
             
-        print(f"Step {step + 1}/{100}")
+        # print(f"Step {step + 1}/{100}")
         
         if monkey_canvas.winfo_exists() == 0:
             return
@@ -138,9 +158,13 @@ def teach_monkey_word(emergency_message, word_number):
         print("Invalid word number")
         return ""
 
-def send_ten_monkeys():
+def erne_send_ten_monkeys():
     for i in range(10):
         send_erne_monkey_with_word(4)
+
+def kerne_send_ten_monkeys():
+    for i in range(10):
+        send_kerne_monkey_with_word(4)
 
 word_to_send = teach_monkey_word(emergencyMessage, 4)
 
@@ -150,23 +174,10 @@ kerne_monkey_button.grid(row=7, column=1)
 erne_monkey_button = tk.Button(window, text=f"Ernesti send monkey", command=lambda: send_erne_monkey_with_word(4))
 erne_monkey_button.grid(row=8, column=1)
 
-erne_monkeys_button = tk.Button(window, text=f"Ernesti send 10 monkeys", command=lambda: send_ten_monkeys())
+erne_monkeys_button = tk.Button(window, text=f"Ernesti send 10 monkeys", command=lambda: erne_send_ten_monkeys())
 erne_monkeys_button.grid(row=9, column=1)
 
-koristetta = tk.Label(window, text="").grid(row=0, column=0)
-point_button = []
-for i in range(5):
-    button_temp = tk.Button(window, text="Points: " + str(i + 1), padx=40)
-    button_temp.grid(row=0, column=i + 1)
-    point_button.append(button_temp)
+kerne_monkeys_button = tk.Button(window, text=f"Kernesti send 10 monkeys", command=lambda: kerne_send_ten_monkeys())
+kerne_monkeys_button.grid(row=10, column=1)
 
-def i_suppose_i_have_earned_so_much_points(amount_of_points):
-    for i in range(5):
-        point_button[i].configure(bg='gray')
-    time.sleep(1)
-    for i in range(amount_of_points):
-        point_button[i].configure(bg='green')
-        winsound.Beep(440 + i * 100, 500)
-
-i_suppose_i_have_earned_so_much_points(2)
 window.mainloop()
