@@ -5,6 +5,8 @@ from PIL import Image, ImageTk
 import threading
 import random
 
+# https://youtu.be/3vzZ1yZpixw linkki videoon
+
 window = tk.Tk()
 window.title("Exercise 5")
 window.geometry("800x800")
@@ -33,12 +35,6 @@ island.create_text(50, 250, text="island", fill="white", font=("Arial", 12, "bol
 continent = tk.Canvas(window, width=100, height=500, bg="purple")
 continent.grid(row=1, column=5, rowspan=5)
 continent.create_text(50, 250, text="continent", fill="white", font=("Arial", 12, "bold"))
-
-# erne_monkey = tk.Canvas(window, width=100, height=100, bg="brown")
-# erne_monkey.create_text(50, 50, text="monkey", fill="white", font=("Arial", 12, "bold"))
-
-# kerne_monkey = tk.Canvas(window, width=100, height=100, bg="red")
-# kerne_monkey.create_text(50, 50, text="monkey", fill="white", font=("Arial", 12, "bold"))
 
 word_label = tk.Label(window, text="", font=("Arial", 12, "bold"))
 word_label.grid(row=9, column=5)
@@ -91,8 +87,8 @@ def move_monkey(monkey_canvas, y_start):
             with monkey_lock:
                 monkey_canvas.place(x=x, y=y_start)
                 winsound.Beep(440, 100)
-                window.update()  # Update the window to show the new position
-                window.after(1)  # Delay for smoother animation (adjust as needed)
+                window.update()
+                window.after(50)
             
         # print(f"Step {step + 1}/{100}")
         
@@ -116,8 +112,6 @@ def send_erne_monkey_with_word(word_number):
         erne_monkeys.append(monkey_canvas)
         y_start = island.winfo_y()
         threading.Thread(target=move_monkey, args=(monkey_canvas,y_start)).start()
-        # Adjust the eat_probability
-        # adjust_eat_probability()
     else:
         print("Invalid word number")
 
@@ -131,25 +125,9 @@ def send_kerne_monkey_with_word(word_number):
         kerne_monkeys.append(monkey_canvas)
         y_start = island.winfo_y() + island.winfo_height() - 105
         threading.Thread(target=move_monkey, args=(monkey_canvas,y_start)).start()
-        # adjust_eat_probability()
     else:
         print("Invalid word number")
         
-# # Adjust the eat_probability dynamically to achieve a 50% success rate
-# def adjust_eat_probability():
-#     global eat_probability, total_monkeys,monkeys_reached_continent
-#     total_monkeys += 1  # Double the probability to increase success rate
-
-#     if monkeys_reached_continent == 0:
-#         eat_probability = 0.01  # Double the probability to increase success rate
-#     else:
-#         success_rate = monkeys_reached_continent / total_monkeys
-#         # Adjust the eat_probability based on the success rate
-#         max_probability = 0.1  # Set a maximum threshold for eat_probability
-#         eat_probability = min(max_probability, eat_probability * (1 + 0.1 * (0.5 - success_rate)))   
-
-#     print(f"Adjusted eat_probability: {eat_probability}")
-
 def teach_monkey_word(emergency_message, word_number):
     words = emergency_message.split()
     if 0 <= word_number < len(words):
