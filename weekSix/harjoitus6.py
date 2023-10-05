@@ -47,10 +47,45 @@ ernesti_ditch = island.create_line(180, 70, 180, -30, fill="black")
 # Create the Kernesti_ditch starting from the border of the pool to the border of the island
 kernesti_ditch = island.create_line(225, 70, 225, -30, fill="black")
 
+# Create a variable to track the monkey's position
+monkey_position = (180, 70)
+
 # Initialize matrices
 pool_matrix = np.zeros((20, 60))
 ernesti_ditch_matrix = np.ones((100, 1))
 kernesti_ditch_matrix = np.ones((100, 1))
+
+def guide_monkey_to_ditch():
+    global monkey_position
+    target_y = -30
+    while monkey_position[1] > target_y:
+        island.coords(ernesti_ditch, 180, monkey_position[1], 180, target_y)
+        time.sleep(0.1)
+        dig_ditch_pixel(monkey_position[1])
+        monkey_position = (180, monkey_position[1] - 1)
+
+# Function to dig a ditch and update the ditch matrix
+def dig_ditch_pixel(y):
+    x = 180
+    ditch_row = int((70 - y) / 2) 
+    if ditch_row >= 0:
+        if ernesti_ditch_matrix[ditch_row] == 1:
+            ernesti_ditch_matrix[ditch_row] = 0 
+            winsound.Beep(440, 50)
+            update_ditch_display()
+
+# Function to update the ditch display
+def update_ditch_display():
+    pass
+
+# Create a thread to run the guide_monkey_to_ditch function
+def start_guiding_monkey():
+    guide_thread = threading.Thread(target=guide_monkey_to_ditch)
+    guide_thread.start()
+
+# Add a button to trigger the monkey guiding process
+start_button = tk.Button(window, text="Start Guiding Monkey", command=start_guiding_monkey)
+start_button.grid(row=6, column=3)
 
 i_suppose_i_have_earned_so_much_points(1) 
 window.mainloop()
