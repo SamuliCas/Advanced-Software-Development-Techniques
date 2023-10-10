@@ -1,3 +1,6 @@
+# Link to the video
+# https://youtu.be/IMUJXfJChUw
+
 import tkinter as tk 
 import winsound 
 import time 
@@ -5,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import threading
+
 
 window = tk.Tk() 
 window.title("Exercise 5") 
