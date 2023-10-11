@@ -3,6 +3,10 @@ import winsound
 import time
 import random
 import threading
+import pygame
+pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.load("laughter.wav")
 
 window=tk.Tk()
 window.title("Exercise 5")
@@ -35,10 +39,24 @@ def generate_monkey_sound():
 
 # Function to simulate a monkey's life on the island
 def monkey_life(monkey):
+    laughter_sound = pygame.mixer.Sound("laughter.wav")
+
     while monkey['alive']:
         monkey['sound'] = generate_monkey_sound()
         winsound.Beep(monkey['sound'], 500)
+        
+        # Simulate a 1% chance of monkey's death
+        if random.randint(1, 100) <= 1:
+            monkey['alive'] = False
+            # Play "laughter.wav" when a monkey dies
+            laughter_sound.play()
+            remove_monkey_oval(monkey['oval'])
+
         time.sleep(10)  # Wait for 10 seconds between sounds
+
+# Function to remove the oval associated with a monkey from the canvas
+def remove_monkey_oval(oval):
+    sea_canvas.delete(oval)
 
 # Function to generate a random location for a new island
 def generate_random_location(existing_locations, max_attempts=100):
@@ -59,7 +77,7 @@ def is_adjacent(new_location, existing_locations):
                 return True
     return False
 
-# Function to create a new island
+## Function to create a new island
 def create_new_island():
     if len(island_locations) >= 10:
         return  # Limit the number of islands to 10
@@ -70,13 +88,30 @@ def create_new_island():
         x, y = new_location
         sea_canvas.create_rectangle(x * 100, (y - 1) * 100, (x + 1) * 100, y * 100, fill="green")
 
-        # Create 10 monkeys for the new island
-        for _ in range(10):
+        # Calculate coordinates for each monkey within the island
+        monkey_size = 20  # Adjust the size as needed
+        margin_x = (100 - monkey_size * 5) / 2
+        margin_y = (100 - monkey_size * 2) / 2
+
+         # Create 10 monkeys for the new island
+        for i in range(10):
             new_monkey = {
                 'sound': generate_monkey_sound(),
                 'alive': True,
             }
             monkeys.append(new_monkey)
+
+            monkey_x = x * 100 + margin_x + (i % 5) * monkey_size
+            monkey_y = (y - 1) * 100 + margin_y + (i // 5) * monkey_size
+
+            # Draw individual oval for each monkey
+            monkey_oval = sea_canvas.create_oval(
+                monkey_x, monkey_y,
+                monkey_x + monkey_size, monkey_y + monkey_size,
+                fill="brown"
+            )
+
+            new_monkey['oval'] = monkey_oval  # Store the oval reference in the monkey dictionary
 
             # Start a new thread for the monkey's life
             monkey_thread = threading.Thread(target=monkey_life, args=(new_monkey,))
@@ -105,3 +140,10 @@ clear_all_button.grid(row=0, column=8)
 
 i_suppose_i_have_earned_so_much_points(1)
 window.mainloop()
+
+
+
+# now monkey has 1% change to die of laugther. Next we need to make: 
+# -muokkaa vastaavasti kokonaisuuteen ilmiö, jonka myötä, mikäli apina siirtyy merelle, 
+# sillä on joka sekunti noin prosentin riski tulla syödyksi hain toimesta. 
+# Lisää vastaavasti syödyksi tulemisen ääniefekti toteutukseesi.
